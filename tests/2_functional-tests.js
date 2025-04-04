@@ -10,10 +10,20 @@ suite('Functional Tests', function () {
   test('Create an issue with every field: POST request to /api/issues/{project}', done => {
     chai
       .request(server)
-      .put('')
-      .send()
+      .post('/api/issues/someIssue')
+      .send({
+        "issue_title": "Some issue",
+        "issue_text": "blah blah blah",
+        "created_by":"me",
+        "assigned_to":"him",
+        'status_text': "unknown"
+      })
       .end((err, res) => {
-        assert.strictEqual(res.body.issue_title, undefined)
+        assert.strictEqual(res.body.issue_title, "Some issue");
+        assert.strictEqual(res.body.issue_text, "blah blah blah");
+        assert.strictEqual(res.body.created_by, "me");
+        assert.strictEqual(res.body.assigned_to, "him");
+        assert.strictEqual(res.body.status_text, "unknown");
         done()
       })
   })
