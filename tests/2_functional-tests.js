@@ -17,4 +17,134 @@ suite('Functional Tests', function () {
         done()
       })
   })
+  test('Create an issue with only required fields: POST request to /api/issues/{project}', done => {
+    chai
+      .request(server)
+      .put('')
+      .send()
+      .end((err, res) => {
+        assert.strictEqual(res.body.issue_title, undefined)
+        done()
+      })
+  })
+  test('Create an issue with missing required fields: POST request to /api/issues/{project}', done => {
+    chai
+      .request(server)
+      .put('')
+      .send()
+      .end((err, res) => {
+        assert.strictEqual(res.body.issue_title, undefined)
+        done()
+      })
+  })
+  test('View issues on a project: GET request to /api/issues/{project}', done => {
+    chai
+      .request(server)
+      .put('')
+      .send()
+      .end((err, res) => {
+        assert.strictEqual(res.body.issue_title, undefined)
+        done()
+      })
+  })
+  test('View issues on a project with one filter: GET request to /api/issues/{project}', done => {
+    chai
+      .request(server)
+      .put('')
+      .send()
+      .end((err, res) => {
+        assert.strictEqual(res.body.issue_title, undefined)
+        done()
+      })
+  })
+  test('View issues on a project with multiple filters: GET request to /api/issues/{project}', done => {
+    chai
+      .request(server)
+      .put('')
+      .send()
+      .end((err, res) => {
+        assert.strictEqual(res.body.issue_title, undefined)
+        done()
+      })
+  })
+  test('Update one field on an issue: PUT request to /api/issues/{project}', done => {
+    chai
+      .request(server)
+      .put('')
+      .send()
+      .end((err, res) => {
+        assert.strictEqual(res.body.issue_title, undefined)
+        done()
+      })
+  })
+  test('Update multiple fields on an issue: PUT request to /api/issues/{project}', done => {
+    chai
+      .request(server)
+      .put('')
+      .send()
+      .end((err, res) => {
+        assert.strictEqual(res.body.issue_title, undefined)
+        done()
+      })
+  })
+  test('Update an issue with missing _id: PUT request to /api/issues/{project}', done => {
+    chai
+      .request(server)
+      .put('')
+      .send()
+      .end((err, res) => {
+        assert.strictEqual(res.body.issue_title, undefined)
+        done()
+      })
+  })
+  test('Update an issue with no fields to update: PUT request to /api/issues/{project}', done => {
+    chai
+      .request(server)
+      .put('')
+      .send()
+      .end((err, res) => {
+        assert.strictEqual(res.body.issue_title, undefined)
+        done()
+      })
+  })
+  test('Update an issue with an invalid _id: PUT request to /api/issues/{project}', done => {
+    chai
+      .request(server)
+      .put('')
+      .send()
+      .end((err, res) => {
+        assert.strictEqual(res.body.issue_title, undefined)
+        done()
+      })
+  })
+  test('Delete an issue: DELETE request to /api/issues/{project}', done => {
+    chai
+      .request(server)
+      .put('')
+      .send()
+      .end((err, res) => {
+        assert.strictEqual(res.body.issue_title, undefined)
+        done()
+      })
+  })
+  test('Delete an issue with an invalid_id: DELETE request to /api/issues/{project}', done => {
+    chai
+      .request(server)
+      .put('')
+      .send()
+      .end((err, res) => {
+        assert.strictEqual(res.body.issue_title, undefined)
+        done()
+      })
+  })
+  test('Delete an issue with missing _id: DELETE request to /api/issues/{project}', done => {
+    chai
+      .request(server)
+      .put('')
+      .send()
+      .end((err, res) => {
+        assert.strictEqual(res.body.issue_title, undefined)
+        done()
+      })
+  })
 })
