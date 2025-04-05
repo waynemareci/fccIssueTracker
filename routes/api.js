@@ -41,8 +41,8 @@ module.exports = function (app) {
         res.json({ error: 'required field(s) missing' })
         return
       }
-      const foundProject = Issue.findOne({ project_name: project })
       var activeId
+      const foundProject = await Issue.findOne({ project_name: project })
       if (!foundProject) {
         const instance = new Issue({
           project_name: project,
@@ -56,8 +56,10 @@ module.exports = function (app) {
         })
         const savedIssue = await instance.save()
         activeId = savedIssue._id
+        console.log("saved new instance; activeId is " + activeId)
       } else {
         activeId = foundProject._id
+        //console.log("foundProject is " + foundProject)
         const update = {
           $push: {
             issue_data: {
@@ -75,7 +77,7 @@ module.exports = function (app) {
       }
       res.json({
         project_name: project,
-        issue_data: {
+        //issue_data: [{
         issue_title: req.body.issue_title,
         issue_text: req.body.issue_text,
         created_by: req.body.created_by,
@@ -83,7 +85,8 @@ module.exports = function (app) {
         status_text: '',
         created_on: Date.now(),
         updated_on: Date.now(),
-        open: true},
+        open: true,
+      //}],
         _id: activeId
       })
     })
