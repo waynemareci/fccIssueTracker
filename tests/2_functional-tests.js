@@ -11,18 +11,19 @@ suite('Functional Tests', function () {
     chai
       .request(server)
       .post('/api/issues/someIssue')
-      .send({
+      .send({issue_data: {
         issue_title: 'Some issue',
         issue_text: 'blah blah blah',
         created_by: 'me',
         assigned_to: 'him'
-      })
+      }})
       .end((err, res) => {
-        assert.strictEqual(res.body.issue_title, 'Some issue')
-        assert.strictEqual(res.body.issue_text, 'blah blah blah')
-        assert.strictEqual(res.body.created_by, 'me')
-        assert.strictEqual(res.body.assigned_to, 'him')
-        assert.strictEqual(res.body.status_text, '')
+        assert.strictEqual(res.body.project_name,'someIssue')
+        assert.strictEqual(res.body.issue_data.issue_title, 'Some issue')
+        assert.strictEqual(res.body.issue_data.issue_text, 'blah blah blah')
+        assert.strictEqual(res.body.issue_data.created_by, 'me')
+        assert.strictEqual(res.body.issue_data.assigned_to, 'him')
+        assert.strictEqual(res.body.issue_data.status_text, '')
         done()
       })
   })
