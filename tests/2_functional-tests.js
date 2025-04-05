@@ -12,18 +12,17 @@ suite('Functional Tests', function () {
       .request(server)
       .post('/api/issues/someIssue')
       .send({
-        "issue_title": "Some issue",
-        "issue_text": "blah blah blah",
-        "created_by":"me",
-        "assigned_to":"him",
-        'status_text': "unknown"
+        issue_title: 'Some issue',
+        issue_text: 'blah blah blah',
+        created_by: 'me',
+        assigned_to: 'him'
       })
       .end((err, res) => {
-        assert.strictEqual(res.body.issue_title, "Some issue");
-        assert.strictEqual(res.body.issue_text, "blah blah blah");
-        assert.strictEqual(res.body.created_by, "me");
-        assert.strictEqual(res.body.assigned_to, "him");
-        assert.strictEqual(res.body.status_text, "unknown");
+        assert.strictEqual(res.body.issue_title, 'Some issue')
+        assert.strictEqual(res.body.issue_text, 'blah blah blah')
+        assert.strictEqual(res.body.created_by, 'me')
+        assert.strictEqual(res.body.assigned_to, 'him')
+        assert.strictEqual(res.body.status_text, '')
         done()
       })
   })
