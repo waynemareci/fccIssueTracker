@@ -18,7 +18,7 @@ suite('Functional Tests', function () {
         assigned_to: 'him'
       })
       .end((err, res) => {
-        assert.strictEqual(res.body.project_name,'someIssue')
+        assert.strictEqual(res.body.project_name, 'someIssue')
         assert.strictEqual(res.body.issue_title, 'Some issue')
         assert.strictEqual(res.body.issue_text, 'blah blah blah')
         assert.strictEqual(res.body.created_by, 'me')
@@ -30,30 +30,33 @@ suite('Functional Tests', function () {
   test('Create an issue with only required fields: POST request to /api/issues/{project}', done => {
     chai
       .request(server)
-      .put('')
-      .send()
+      .post('/api/issues/anotherIssue')
+      .send({
+        issue_title: 'Another issue',
+        issue_text: 'more blah blah balh',
+        created_by: 'me, too'
+      })
       .end((err, res) => {
-        assert.strictEqual(res.body.issue_title, undefined)
+        assert.strictEqual(res.body.issue_title, 'Another issue')
         done()
       })
   })
   test('Create an issue with missing required fields: POST request to /api/issues/{project}', done => {
     chai
       .request(server)
-      .put('')
+      .post('/api/issues/oneMoreIssue')
       .send()
       .end((err, res) => {
-        assert.strictEqual(res.body.issue_title, undefined)
+        assert.strictEqual(res.body.error, 'required field(s) missing' )
         done()
       })
   })
   test('View issues on a project: GET request to /api/issues/{project}', done => {
     chai
       .request(server)
-      .put('')
-      .send()
+      .get('/api/issues/someIssue')
       .end((err, res) => {
-        assert.strictEqual(res.body.issue_title, undefined)
+        assert.isArray(res.body)
         done()
       })
   })

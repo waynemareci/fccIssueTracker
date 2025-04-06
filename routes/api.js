@@ -12,9 +12,9 @@ module.exports = function (app) {
         created_on: { type: Date, required: true, default: Date.now() },
         updated_on: { type: Date, required: true, default: Date.now() },
         created_by: { type: String, required: true },
-        assigned_to: { type: String },
+        assigned_to: { type: String, default:'' },
         open: { type: Boolean, required: true, default: true },
-        status_text: { type: String }
+        status_text: { type: String, default:'' }
       }
     ]
   })
@@ -22,9 +22,12 @@ module.exports = function (app) {
   app
     .route('/api/issues/:project')
 
-    .get(function (req, res) {
+    .get(async function (req, res) {
       let project = req.params.project
       console.log('processing get; project is ' + project)
+      const foundProject = await Issue.findOne({ project_name: project })
+      console.log('processing get; project is ' + project + "; foundProject is " + foundProject)
+      res.send(foundProject.issue_data)
     })
 
     .post(async (req, res) => {
