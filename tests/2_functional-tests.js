@@ -57,14 +57,14 @@ suite('Functional Tests', function () {
       .get('/api/issues/someIssue')
       .end((err, res) => {
         assert.isArray(res.body)
+        assert.isAtLeast(res.body.length,1)
         done()
       })
   })
   test('View issues on a project with one filter: GET request to /api/issues/{project}', done => {
     chai
       .request(server)
-      .put('')
-      .send()
+      .get('/api/issues/someIssue?assigned_to=him')
       .end((err, res) => {
         assert.strictEqual(res.body.issue_title, undefined)
         done()
@@ -73,10 +73,9 @@ suite('Functional Tests', function () {
   test('View issues on a project with multiple filters: GET request to /api/issues/{project}', done => {
     chai
       .request(server)
-      .put('')
-      .send()
+      .get('/api/issues/someIssue?created_by=me&assigned_to=him')
       .end((err, res) => {
-        assert.strictEqual(res.body.issue_title, undefined)
+        assert.isArray(res.body)
         done()
       })
   })

@@ -12,9 +12,9 @@ module.exports = function (app) {
         created_on: { type: Date, required: true, default: Date.now() },
         updated_on: { type: Date, required: true, default: Date.now() },
         created_by: { type: String, required: true },
-        assigned_to: { type: String, default:'' },
+        assigned_to: { type: String, default: '' },
         open: { type: Boolean, required: true, default: true },
-        status_text: { type: String, default:'' }
+        status_text: { type: String, default: '' }
       }
     ]
   })
@@ -25,9 +25,36 @@ module.exports = function (app) {
     .get(async function (req, res) {
       let project = req.params.project
       console.log('processing get; project is ' + project)
+      var filters = {}
+      if (req.query.created_by) {
+        console.log(
+          'passed in created_by query; created_by is ' + req.query.created_by
+        )
+        filters.created_by = req.query.created_by
+      }
+      if (req.query.assigned_to) {
+        console.log(
+          'passed in assigned_to query; assigned_to is ' + req.query.assigned_to
+        )
+        filters.assigned_to = req.query.assigned_to
+      }
+      if (req.query._id) {
+        console.log('passed in _id query; _id is ' + req.query._id)
+        const foundById = await Issue.findById(req.query._id)
+        console.log("foundById: " + foundById)
+        res.send(foundById)
+        return
+      }
       const foundProject = await Issue.findOne({ project_name: project })
-      console.log('processing get; project is ' + project + "; foundProject is " + foundProject)
-      res.send(foundProject.issue_data)
+      //console.log('processing get; project is ' + project + "; foundProject is " + foundProject)
+      const issueData = foundProject.issue_data
+      console.log('filters is ' + JSON.stringify(filters))
+      const filteredIssues = issueData.filter(item =>
+        Object.keys(filters).every(key => item[key] === filters[key])
+      )
+      console.log('length of filteredIssues is ' + filteredIssues.length)
+      if (filteredIssues.length < 5) console.log("filteredIssues: " + filteredIssues)
+      res.send(filteredIssues)
     })
 
     .post(async (req, res) => {
@@ -53,13 +80,14 @@ module.exports = function (app) {
             {
               issue_title: req.body.issue_title,
               issue_text: req.body.issue_text,
-              created_by: req.body.created_by
+              created_by: req.body.created_by,
+              assigned_to: req.body.assigned_to
             }
           ]
         })
         const savedIssue = await instance.save()
         activeId = savedIssue._id
-        console.log("saved new instance; activeId is " + activeId)
+        console.log('saved new instance; activeId is ' + activeId)
       } else {
         activeId = foundProject._id
         //console.log("foundProject is " + foundProject)
@@ -68,7 +96,8 @@ module.exports = function (app) {
             issue_data: {
               issue_title: req.body.issue_title,
               issue_text: req.body.issue_text,
-              created_by: req.body.created_by
+              created_by: req.body.created_by,
+              assigned_to: req.body.assigned_to
             }
           }
         }
@@ -89,7 +118,7 @@ module.exports = function (app) {
         created_on: Date.now(),
         updated_on: Date.now(),
         open: true,
-      //}],
+        //}],
         _id: activeId
       })
     })
