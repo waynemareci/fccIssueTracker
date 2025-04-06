@@ -33,6 +33,7 @@ app.route('/:project/')
     res.sendFile(process.cwd() + '/views/issue.html');
   });
 
+
 //Index page (static HTML)
 app.route('/')
   .get(function (req, res) {

@@ -14,7 +14,11 @@ module.exports = function (app) {
         created_by: { type: String, required: true },
         assigned_to: { type: String, default: '' },
         open: { type: Boolean, required: true, default: true },
-        status_text: { type: String, default: '' }
+        status_text: { type: String, default: '' },
+        _id: {
+          type: mongoose.Schema.Types.ObjectId,
+          default: () => new mongoose.Types.ObjectId()
+        }
       }
     ]
   })
@@ -25,6 +29,17 @@ module.exports = function (app) {
     .get(async function (req, res) {
       let project = req.params.project
       console.log('processing get; project is ' + project)
+      const foundProject = await Issue.findOne({ project_name: project })
+      if (req.query._id) {
+        console.log('passed in _id query; _id is ' + req.query._id)
+        const foundIssueById = await Issue.findOne(
+          { _id: foundProject._id },
+          { issue_data: { $elemMatch: { _id: req.query._id } } }
+        )
+        console.log('foundIssueById: ' + foundIssueById)
+        res.send(foundIssueById.issue_data)
+        return
+      }
       var filters = {}
       if (req.query.created_by) {
         console.log(
@@ -38,14 +53,7 @@ module.exports = function (app) {
         )
         filters.assigned_to = req.query.assigned_to
       }
-      if (req.query._id) {
-        console.log('passed in _id query; _id is ' + req.query._id)
-        const foundById = await Issue.findById(req.query._id)
-        console.log("foundById: " + foundById)
-        res.send(foundById)
-        return
-      }
-      const foundProject = await Issue.findOne({ project_name: project })
+
       //console.log('processing get; project is ' + project + "; foundProject is " + foundProject)
       const issueData = foundProject.issue_data
       console.log('filters is ' + JSON.stringify(filters))
@@ -53,7 +61,8 @@ module.exports = function (app) {
         Object.keys(filters).every(key => item[key] === filters[key])
       )
       console.log('length of filteredIssues is ' + filteredIssues.length)
-      if (filteredIssues.length < 5) console.log("filteredIssues: " + filteredIssues)
+      if (filteredIssues.length < 5)
+        console.log('filteredIssues: ' + filteredIssues)
       res.send(filteredIssues)
     })
 
