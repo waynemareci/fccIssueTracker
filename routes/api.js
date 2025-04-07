@@ -31,13 +31,19 @@ module.exports = function (app) {
       console.log('processing get; project is ' + project)
       const foundProject = await Issue.findOne({ project_name: project })
       if (req.query._id) {
+        const found = await Issue.findOne({_id: req.query._id})
+        if (found) {
+          console.log("found.issue_data[0]:" + found.issue_data[0])
+          res.send(found.issue_data)
+          return
+        }
         console.log('passed in _id query; _id is ' + req.query._id)
-        const foundIssueById = await Issue.findOne(
-          { _id: foundProject._id },
-          { issue_data: { $elemMatch: { _id: req.query._id } } }
-        )
-        console.log('foundIssueById: ' + foundIssueById)
-        res.send(foundIssueById.issue_data)
+          const foundIssueById = await Issue.findOne(
+            { _id: foundProject._id },
+            { issue_data: { $elemMatch: { _id: req.query._id } } }
+          )
+          console.log('foundIssueById: ' + foundIssueById)
+          res.send(foundIssueById.issue_data)
         return
       }
       var filters = {}
@@ -132,11 +138,39 @@ module.exports = function (app) {
       })
     })
 
-    .put(function (req, res) {
+    .put(async function (req, res) {
       let project = req.params.project
-      console.log("in put code")
-      console.log("req.body: " + JSON.stringify(req.body))
-      res.json({result: 'successfully updated',_id: req.body._id})
+      console.log(
+        'inside put; project is ' +
+          project +
+          '; req.body: ' +
+          JSON.stringify(req.body)
+      )
+      const foundProject = await Issue.findOne({ project_name: project })
+      console.log('length of foundProject is ' + foundProject.length)
+      console.log('foundProject_.id: ' + foundProject._id)
+      const activeId = foundProject._id
+
+      
+      const update = {
+     //   $push: {
+          issue_data:  {
+            issue_title: 'new Issue Title',
+            issue_text: req.body.issue_text,
+            created_by: 'me',
+            assigned_to: 'him',
+            updated_on: Date.now() + 1000
+
+          }
+       // }
+      }
+      const updatedProject = await Issue.findOneAndUpdate(
+        { _id: activeId },
+        //update,
+        {"$set": {"issue_data.0.updated_on": Date.now()}},
+        { new: true }
+      )
+       res.json({ result: 'successfully updated', _id: req.body._id })
     })
 
     .delete(function (req, res) {
