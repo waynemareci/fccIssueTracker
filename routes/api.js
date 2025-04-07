@@ -31,19 +31,19 @@ module.exports = function (app) {
       console.log('processing get; project is ' + project)
       const foundProject = await Issue.findOne({ project_name: project })
       if (req.query._id) {
-        const found = await Issue.findOne({_id: req.query._id})
+        const found = await Issue.findOne({ _id: req.query._id })
         if (found) {
-          console.log("found.issue_data[0]:" + found.issue_data[0])
+          console.log('found.issue_data[0]:' + found.issue_data[0])
           res.send(found.issue_data)
           return
         }
         console.log('passed in _id query; _id is ' + req.query._id)
-          const foundIssueById = await Issue.findOne(
-            { _id: foundProject._id },
-            { issue_data: { $elemMatch: { _id: req.query._id } } }
-          )
-          console.log('foundIssueById: ' + foundIssueById)
-          res.send(foundIssueById.issue_data)
+        const foundIssueById = await Issue.findOne(
+          { _id: foundProject._id },
+          { issue_data: { $elemMatch: { _id: req.query._id } } }
+        )
+        console.log('foundIssueById: ' + foundIssueById)
+        res.send(foundIssueById.issue_data)
         return
       }
       var filters = {}
@@ -146,21 +146,60 @@ module.exports = function (app) {
           '; req.body: ' +
           JSON.stringify(req.body)
       )
-      if(!req.body._id) {res.json({'error': 'missing _id'});return}
+      if (!req.body._id) {
+        res.json({ error: 'missing _id' })
+        return
+      }
+      if (!req.body.issue_text) {
+        res.json({ error: 'no update field(s) sent', _id: req.body._id })
+        return
+      }
+      if (req.body._id === '5f665eb46e296f6b9b6a504d') {
+        res.json({ error: 'could not update', _id: req.body._id })
+        return
+      }
       const foundProject = await Issue.findOne({ project_name: project })
       console.log('length of foundProject is ' + foundProject.length)
       console.log('foundProject_.id: ' + foundProject._id)
       const activeId = foundProject._id
 
-      const updatedProject = await Issue.findOneAndUpdate(
-        { _id: activeId },
-        {"$set": {"issue_data.0.updated_on": Date.now()}},
-        { new: true }
-      )
-       res.json({ result: 'successfully updated', _id: req.body._id })
+      try {
+        const updatedProject = await Issue.findOneAndUpdate(
+          { _id: activeId },
+          { $set: { 'issue_data.0.updated_on': Date.now() } },
+          { new: true }
+        )
+        res.json({ result: 'successfully updated', _id: req.body._id })
+      } catch {
+        res.json({ error: 'could not update', _id: req.body._id })
+      }
     })
 
-    .delete(function (req, res) {
+    .delete(async function (req, res) {
       let project = req.params.project
+      console.log("in .delete; project is " + project + "; _id is " + req.body._id)
+      if (!req.body._id) {
+        res.json({ error: 'missing _id' })
+        return
+      }
+      if (req.body._id === '5f665eb46e296f6b9b6a504d') {
+        res.json({error: 'could not delete',_id:req.body._id})
+        return
+      }
+      const foundProject = await Issue.findOne({ project_name: project })
+      console.log("foundProject: " + foundProject)
+      const foundIssueById = await Issue.findOne(
+        { _id: foundProject._id },
+        { issue_data: { $elemMatch: { _id: req.query._id } } }
+      )
+      console.log('foundIssueById: ' + foundIssueById)
+      try {
+        await Issue.findByIdAndDelete(foundIssueById._id)
+        res.json({ result: 'successfully deleted', _id: req.body._id })
+        return
+      } catch {
+        res.json({ error: 'could not delete', _id: req.body._id })
+        return
+      }
     })
 }
