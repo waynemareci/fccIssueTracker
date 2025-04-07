@@ -146,27 +146,14 @@ module.exports = function (app) {
           '; req.body: ' +
           JSON.stringify(req.body)
       )
+      if(!req.body._id) {res.json({'error': 'missing _id'});return}
       const foundProject = await Issue.findOne({ project_name: project })
       console.log('length of foundProject is ' + foundProject.length)
       console.log('foundProject_.id: ' + foundProject._id)
       const activeId = foundProject._id
 
-      
-      const update = {
-     //   $push: {
-          issue_data:  {
-            issue_title: 'new Issue Title',
-            issue_text: req.body.issue_text,
-            created_by: 'me',
-            assigned_to: 'him',
-            updated_on: Date.now() + 1000
-
-          }
-       // }
-      }
       const updatedProject = await Issue.findOneAndUpdate(
         { _id: activeId },
-        //update,
         {"$set": {"issue_data.0.updated_on": Date.now()}},
         { new: true }
       )
