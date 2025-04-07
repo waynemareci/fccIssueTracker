@@ -134,6 +134,9 @@ module.exports = function (app) {
 
     .put(function (req, res) {
       let project = req.params.project
+      console.log("in put code")
+      console.log("req.body: " + JSON.stringify(req.body))
+      res.json({result: 'successfully updated',_id: req.body._id})
     })
 
     .delete(function (req, res) {
